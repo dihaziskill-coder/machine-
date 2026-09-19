@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ML Prediction | AI Predictor</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top left, #243b55, transparent 40%),
+                radial-gradient(circle at bottom right, #141e30, transparent 40%),
+                #080d18;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(18px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.45);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 7px 14px;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+
+        h1 {
+            font-size: 34px;
+            margin-bottom: 12px;
+        }
+
+        .description {
+            color: #b7c0d0;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 9px;
+            font-size: 14px;
+            color: #dce3ee;
+        }
+
+        .input-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 13px;
+            background: rgba(0,0,0,0.25);
+            color: white;
+            font-size: 17px;
+            outline: none;
+            transition: 0.25s;
+        }
+
+        input:focus {
+            border-color: #7dd3fc;
+            box-shadow: 0 0 0 3px rgba(125,211,252,0.12);
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 13px;
+            background: linear-gradient(135deg, #38bdf8, #6366f1);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.25s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(56,189,248,0.25);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            display: none;
+            margin-top: 25px;
+            padding: 22px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            text-align: center;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .result-title {
+            color: #aeb8c9;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .prediction {
+            font-size: 38px;
+            font-weight: bold;
+        }
+
+        .error {
+            color: #fca5a5;
+            margin-top: 15px;
+            text-align: center;
+            display: none;
+        }
+
+        .footer {
+            text-align: center;
+            color: #7f8ba0;
+            font-size: 12px;
+            margin-top: 25px;
+        }
+
+        .loader {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin: auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 500px) {
+            .card {
+                padding: 28px 22px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <div class="badge">🤖 Machine Learning</div>
+
+        <h1>Smart Predictor</h1>
+
+        <p class="description">
+            Enter your value below and our trained machine learning
+            model will generate a prediction instantly.
+        </p>
+
+        <label for="inputValue">Input Value</label>
+
+        <div class="input-box">
+            <input
+                id="inputValue"
+                type="number"
+                step="any"
+                placeholder="Enter a value..."
+            >
+        </div>
+
+        <button id="predictBtn" onclick="predict()">
+            <span id="buttonText">Predict Now</span>
+            <span class="loader" id="loader"></span>
+        </button>
+
+        <div class="error" id="error"></div>
+
+        <div class="result" id="result">
+
+            <div class="result-title">
+                Prediction Result
+            </div>
+
+            <div class="prediction" id="prediction">
+                --
+            </div>
+
+        </div>
+
+        <div class="footer">
+            Powered by your trained Machine Learning model
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+async function predict() {
+
+    const input = document.getElementById("inputValue");
+    const button = document.getElementById("predictBtn");
+    const buttonText = document.getElementById("buttonText");
+    const loader = document.getElementById("loader");
+    const result = document.getElementById("result");
+    const prediction = document.getElementById("prediction");
+    const error = document.getElementById("error");
+
+    const value = input.value.trim();
+
+    error.style.display = "none";
+
+    if (value === "") {
+        error.textContent = "Please enter a value first.";
+        error.style.display = "block";
+        return;
+    }
+
+    button.disabled = true;
+    buttonText.style.display = "none";
+    loader.style.display = "block";
+    result.classList.remove("show");
+
+    try {
+
+        const response = await fetch("/predict", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                value: Number(value)
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || "Prediction failed.");
+        }
+
+        prediction.textContent = data.prediction;
+        result.classList.add("show");
+
+    } catch (err) {
+
+        error.textContent = err.message;
+        error.style.display = "block";
+
+    } finally {
+
+        button.disabled = false;
+        buttonText.style.display = "inline";
+        loader.style.display = "none";
+    }
+}
+
+document.getElementById("inputValue").addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter") {
+        predict();
+    }
+
+});
+
+</script>
+
+</body>
+</html>
